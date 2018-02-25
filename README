@@ -1,0 +1,20 @@
+1. Run "scripts/get-trees.sh" to get all sources required. Takes a while, have a coffee.
+
+2. Edit Makefile: 
+	- set VER to latest Vivado version (only 2017.4 tested).
+	- set UBOOT_DEV to correct board.
+	- Optionally, update path to .bit and .hdf files. Simple ZedBoard example provided for test.
+
+3. Run "make" to build all parts. Have another coffee.
+
+4. Mount SD card as follows:
+	- Boot partition on sdcard/boot, must be FAT 
+	- file system on sdcard/fs, must be EXT4
+
+5. Run "make sdboot" to install boot files.
+
+6. Run "make sdfs" to install file system.
+
+7. Unmount sd card and boot up the board.
+
+Note that it might be necessary to descend all trees and do "git fetch" for a new relase.
