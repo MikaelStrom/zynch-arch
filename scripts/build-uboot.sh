@@ -5,10 +5,12 @@ VER=$1
 DEV=$2
 VUBOOT=xilinx-v$VER
 NP=`nproc`
+PWD=`pwd`
 
 echo Building U-BOOT $VUBOOT for $DEV
 
 source scripts/tools.sh $VER
+
 cd trees/u-boot-xlnx
 
 if [ `git describe --tags` != $VUBOOT ]; then

@@ -15,44 +15,50 @@ HDF = fpga/synth/zynq.hdf
 
 # Section below should be fairly static
 
-KERNEL = trees/linux-xlnx/arch/arm/boot/uImage
+DTC = trees/dtc/dtc
 UBOOT = trees/u-boot-xlnx/u-boot
+KERNEL = trees/linux-xlnx/arch/arm/boot/uImage
 FSBL = fsbl/executable.elf
 DTS = dt/system-top.dts
 DTB = dt/devicetree.dtb
 BOOT = boot/boot.bin
 
-boot: $(BOOT) 
+boot: $(BOOT)
 
-$(UBOOT):
+$(DTC):
+	@cd trees/dtc && make
+
+$(UBOOT): $(DTC)
 	@scripts/build-uboot.sh $(VER) $(UBOOT_DEV)
 
 $(KERNEL): $(UBOOT)
 	@scripts/build-kernel.sh $(VER)
 
-$(FSBL): $(HDF)
+$(FSBL): $(KERNEL) $(HDF)
 	@scripts/tools.sh $(VER) hsi scripts/build-fsbl.tcl $(HDF)
 
-$(DTS): $(HDF)
+$(DTS): $(FSBL) $(HDF)
 	@scripts/tools.sh $(VER) hsi scripts/build-dts.tcl $(HDF)
 
 $(DTB): $(DTS) $(KERNEL)
+	@patch -p1 < patches/usb_host_mode.patch
 	@trees/linux-xlnx/scripts/dtc/dtc -I dts -O dtb -o $(DTB) $(DTS)
 
-$(BOOT): $(BIT) $(FSBL) $(UBOOT) $(KERNEL)
+$(BOOT): $(BIT) $(UBOOT) $(FSBL) $(KERNEL)
 	@scripts/build-boot.sh $(VER) $(BIT) $(FSBL) $(UBOOT) $(KERNEL)
 
 # Install on sdcard
 
-sdboot: $(DTB) $(BOOT) 
+sdboot: $(DTB) $(BOOT)
 	@sudo scripts/build-sdboot.sh $(KERNEL)
 
-sdfs: 
+sdfs:
 	@sudo scripts/build-sdfs.sh $(KERNEL)
 
 # Clean up
 
 distclean:
-	@cd trees/u-boot-xlnx && git clean -dxf
+	@cd trees/dtc && git clean -dxf
+	@cd trees/linux-xlnx && git clean -dxf
 	@cd trees/linux-xlnx && git clean -dxf
 	@rm -rf fsbl dt boot

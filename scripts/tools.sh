@@ -8,10 +8,13 @@ ARG1=$4
 ARG2=$5
 ARG3=$6
 
+PWD=`pwd`
 XILINX=/opt/Xilinx
 
 source $XILINX/Vivado/$VER/settings64.sh
 source $XILINX/SDK/$VER/settings64.sh
+
+export PATH=$PWD/trees/dtc:$PWD/trees/u-boot-xlnx/tools:$PATH
 
 # Older Vivado versions have different tool chains
 if [ $VER == "2017.4" ]; then

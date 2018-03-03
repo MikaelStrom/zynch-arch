@@ -1,0 +1,42 @@
+--- a/dt/zynq-7000.dtsi	2018-02-28 03:01:43.683571520 +0800
++++ b/dt/zynq-7000.dtsi	2018-02-28 03:01:48.256904854 +0800
+@@ -396,24 +396,22 @@
+ 			clocks = <&clkc 4>;
+ 		};
+ 
+-		usb0: usb@e0002000 {
+-			compatible = "xlnx,zynq-usb-2.20a", "chipidea,usb2";
+-			status = "disabled";
+-			clocks = <&clkc 28>;
+-			interrupt-parent = <&intc>;
+-			interrupts = <0 21 4>;
+-			reg = <0xe0002000 0x1000>;
+-			phy_type = "ulpi";
+-		};
++		usb0: usb@e0002000 {
++            compatible = "xlnx,zynq-usb-2.20.a", "chipidea,usb2";
++            clocks = <&clkc 28>;
++            dr_mode = "host";
++            interrupt-parent = <&intc>;
++            interrupts = <0 21 4>;
++            reg = <0xe0002000 0x1000>;
++            usb-phy = <&usb_phy0>;
++        };
+ 
+-		usb1: usb@e0003000 {
+-			compatible = "xlnx,zynq-usb-2.20a", "chipidea,usb2";
+-			status = "disabled";
+-			clocks = <&clkc 29>;
+-			interrupt-parent = <&intc>;
+-			interrupts = <0 44 4>;
+-			reg = <0xe0003000 0x1000>;
+-			phy_type = "ulpi";
++		usb_phy0: phy0@e0002000 {
++			compatible = "ulpi-phy";
++			#phy-cells = <0>;
++			reg = <0xe0002000 0x1000>;
++			view-port = <0x170>;
++			drv-vbus;
+ 		};
+ 
+ 		watchdog0: watchdog@f8005000 {
