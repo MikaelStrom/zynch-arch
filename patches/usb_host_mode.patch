@@ -14,7 +14,7 @@
 -			phy_type = "ulpi";
 -		};
 +		usb0: usb@e0002000 {
-+            compatible = "xlnx,zynq-usb-2.20.a", "chipidea,usb2";
++            compatible = "xlnx,zynq-usb-2.20a", "chipidea,usb2";
 +            clocks = <&clkc 28>;
 +            dr_mode = "host";
 +            interrupt-parent = <&intc>;

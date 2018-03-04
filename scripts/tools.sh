@@ -14,6 +14,7 @@ XILINX=/opt/Xilinx
 source $XILINX/Vivado/$VER/settings64.sh
 source $XILINX/SDK/$VER/settings64.sh
 
+# needed for u-boot (dtc headers) and kernel (mkimage to create uImage)
 export PATH=$PWD/trees/dtc:$PWD/trees/u-boot-xlnx/tools:$PATH
 
 # Older Vivado versions have different tool chains

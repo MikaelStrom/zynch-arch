@@ -16,9 +16,6 @@ if [ `git describe --tags` != $VKERNEL ]; then
 	git checkout $VKERNEL
 fi
 
-# We need u-boot's mkimage in path when building kernel, otherwise uImage is not generated
-export PATH=../u-boot-xlnx/tools:$PATH
-
 make ARCH=arm mrproper
 make ARCH=arm xilinx_zynq_defconfig
 time make -j$NP ARCH=arm UIMAGE_LOADADDR=0x8000 uImage

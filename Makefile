@@ -10,8 +10,10 @@ UBOOT_DEV = zynq_zed_config
 # Dummy bit stream and hardware description is put here for now.
 # Obviously, this makefile should build everything when completed.
 
-BIT = fpga/synth/zynq.bit
-HDF = fpga/synth/zynq.hdf
+BIT = fpga/synth/zed.bit
+HDF = fpga/synth/zed.hdf
+#BIT = fpga/synth/microzed.bit
+#HDF = fpga/synth/microzed.hdf
 
 # Section below should be fairly static
 
@@ -41,7 +43,7 @@ $(DTS): $(FSBL) $(HDF)
 	@scripts/tools.sh $(VER) hsi scripts/build-dts.tcl $(HDF)
 
 $(DTB): $(DTS) $(KERNEL)
-	@patch -p1 < patches/usb_host_mode.patch
+	@patch -p1 -N < patches/usb_host_mode.patch
 	@trees/linux-xlnx/scripts/dtc/dtc -I dts -O dtb -o $(DTB) $(DTS)
 
 $(BOOT): $(BIT) $(UBOOT) $(FSBL) $(KERNEL)
@@ -59,6 +61,6 @@ sdfs:
 
 distclean:
 	@cd trees/dtc && git clean -dxf
-	@cd trees/linux-xlnx && git clean -dxf
+	@cd trees/u-boot-xlnx/ && git clean -dxf
 	@cd trees/linux-xlnx && git clean -dxf
 	@rm -rf fsbl dt boot

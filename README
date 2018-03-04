@@ -1,25 +1,36 @@
-Generic makefile for creating Zynq boot images on SD card
+Generic makefile for creating Zynq boot images with Arch Linux on SD card.
+This build gives a working USB host interface.
 
-0. Make sure dtc is not installed on your system, as u-boot build may mixup local and system headers.
+1. Make sure dtc is not installed on your system, as u-boot build may mixup local and system headers.
 
-1. Run "scripts/get-trees.sh" to get all sources required. Takes a while, have a coffee.
+2. Run "scripts/get-trees.sh" to get all sources required. Takes a while, have a coffee.
 
-2. Edit Makefile:
-	- set VER to latest Vivado version (only 2017.4 tested).
+3. Edit Makefile:
+	- set VER to latest Vivado version.
 	- set UBOOT_DEV to target board.
-	- Optionally, update path to .bit and .hdf files. Simple ZedBoard example provided for test.
+	- Optionally, update path to .bit and .hdf files. Simple ZedBoard and MicroZed examples provided for test.
 
-3. Run "make" to build all parts. Have another coffee.
+4. Run "make" to build. Have another coffee.
 
-4. Mount SD card as follows:
-	- Boot partition on sdcard/boot, must be FAT
-	- file system on sdcard/fs, must be EXT4
+5. Mount SD card as follows:
+	- Boot partition on sdcard/boot, must be FAT32
+	- Root file system partition on sdcard/fs, must be EXT4
 
-5. Run "make sdboot" to install boot files.
+6. Run "make sdboot" to install boot files.
 
-6. Run "make sdfs" to install file system.
+7. Run "make sdfs" to install file system.
 
-7. Unmount sd card and boot up the board.
+8. Unmount sd card and boot up the board.
 
-Note that it might be necessary to descend all trees and do "git fetch" for a new relase.
+9. Login with user/password root/root or alarm/alarm.
 
+For reasons unknown to me, uenv.txt on the SD card sometimes fail to set proper environment in u-boot. 
+If boot fails, enter this in u-boot:
+
+Zynq> setenv bootargs 'console=ttyPS0,115200 root=/dev/mmcblk0p2 rw rootwait'
+Zynq> setenv sdboot 'echo Copying Linux from SD to RAM... && mmcinfo && fatload mmc 0 0x3000000 ${kernel_image} && fatload mmc 0 0x2A00000 ${devicetree_image} && bootm 0x3000000 - 0x2A00000'
+Zynq> boot
+
+Note that it might be necessary to descend all trees and do "git fetch" for a new release.
+
+Tested on ZedBoard and MicroZed with Vivado 2017.4 and current Arch Linux (as of March 2018). Builds on 2017.2  but not tested in HW.

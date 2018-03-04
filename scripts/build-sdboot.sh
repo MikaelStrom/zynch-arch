@@ -16,9 +16,9 @@ cp -f boot/boot.bin sdcard/boot
 cp -f dt/devicetree.dtb sdcard/boot
 cp -f $KERNEL sdcard/boot
 
-cat > sdcard/boot/uEnv.txt <<- EOM
-uenvcmd=run arch_sdboot
-arch_sdboot=echo Copying Linux from SD to RAM... && fatload mmc 0 0x3000000 ${kernel_image} && fatload mmc 0 0x2A00000 ${devicetree_image} && if fatload mmc 0 0x2000000 ${ramdisk_image}; then bootm 0x3000000 0x2000000 0x2A00000; else bootm 0x3000000 - 0x2A00000; fi
+cat > sdcard/boot/uenv.txt <<- EOM
+uenvcmd=run sdboot
+sdboot=echo Copying Arch Linux from SD to RAM... && mmcinfo && fatload mmc 0 0x3000000 \${kernel_image} && fatload mmc 0 0x2A00000 \${devicetree_image} && bootm 0x3000000 - 0x2A00000
 bootargs=console=ttyPS0,115200 root=/dev/mmcblk0p2 rw earlyprintk rootfstype=ext4 rootwait
 EOM
 
