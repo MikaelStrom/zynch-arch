@@ -18,7 +18,7 @@ source $XILINX/SDK/$VER/settings64.sh
 export PATH=$PWD/trees/dtc:$PWD/trees/u-boot-xlnx/tools:$PATH
 
 # Older Vivado versions have different tool chains
-if [ $VER == "2017.4" ]; then
+if [[ $VER == "2017.4" || $VER == "2018.2" ]]; then
 	export CROSS_COMPILE=arm-linux-gnueabihf-
 else
 	export CROSS_COMPILE=arm-xilinx-linux-gnueabi-

@@ -2,7 +2,7 @@
 #
 # VER below corresponds to Vivado release number.
 
-VER = 2017.4
+VER = 2018.2
 UBOOT_DEV = zynq_zed_config
 #UBOOT_DEV = zynq_microzed_config
 #UBOOT_DEV = zynq_picozed_config
