@@ -3,6 +3,7 @@ set -e
 
 VER=$1
 DEV=$2
+ATF=$3
 VUBOOT=xilinx-v$VER
 NP=`nproc`
 PWD=`pwd`
@@ -19,10 +20,8 @@ if [ `git describe --tags` != $VUBOOT ]; then
 	git checkout $VUBOOT
 fi
 
-# Patch for SSL 1.1 api changes. Why we need to do this I don't understand.
-if [ $VER == "2017.4" ]; then
-	patch -N -p1 < ../../patches/tools_mkimage_patches_210-openssl-1.1.x-compat.patch || true
-fi
-
+export ARCH=aarch64
+make distclean
 make $DEV
+export DEVICE_TREE="avnet-ultrazedev-cc-v1.0-ultrazedev-som-v1.0"
 time make -j$NP

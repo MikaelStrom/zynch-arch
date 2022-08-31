@@ -2,25 +2,23 @@
 #
 # VER below corresponds to Vivado release number.
 
-VER = 2018.2
-UBOOT_DEV = zynq_zed_config
-#UBOOT_DEV = zynq_microzed_config
-#UBOOT_DEV = zynq_picozed_config
+VER = 2021.2
+UBOOT_DEV = xilinx_zynqmp_virt_defconfig 
 
 # Dummy bit stream and hardware description is put here for now.
 # Obviously, this makefile should build everything when completed.
 
-BIT = fpga/synth/zed.bit
-HDF = fpga/synth/zed.hdf
-#BIT = fpga/synth/microzed.bit
-#HDF = fpga/synth/microzed.hdf
+BIT = fpga/base/base.runs/impl_1/base_wrapper.bit
+HDF = fpga/base/base_wrapper.xsa
 
 # Section below should be fairly static
 
 DTC = trees/dtc/dtc
 UBOOT = trees/u-boot-xlnx/u-boot
-KERNEL = trees/linux-xlnx/arch/arm/boot/uImage
-FSBL = fsbl/executable.elf
+KERNEL = trees/linux-xlnx/arch/arm64/boot/Image
+FSBL = fsbl/hw/export/hw/sw/hw/boot/fsbl.elf
+PMUFW = fsbl/hw/export/hw/sw/hw/boot/pmufw.elf
+ATF = trees/arm-trusted-firmware/build/zynqmp/release/bl31/bl31.elf
 DTS = dt/system-top.dts
 DTB = dt/devicetree.dtb
 BOOT = boot/boot.bin
@@ -30,24 +28,29 @@ boot: $(BOOT)
 $(DTC):
 	@cd trees/dtc && make
 
-$(UBOOT): $(DTC)
-	@scripts/build-uboot.sh $(VER) $(UBOOT_DEV)
-
-$(KERNEL): $(UBOOT)
+$(KERNEL):
 	@scripts/build-kernel.sh $(VER)
 
-$(FSBL): $(KERNEL) $(HDF)
-	@scripts/tools.sh $(VER) hsi scripts/build-fsbl.tcl $(HDF)
+$(ATF):
+	@scripts/build-atf.sh $(VER)
+
+$(UBOOT): $(DTC) $(ATF)
+	@scripts/build-uboot.sh $(VER) $(UBOOT_DEV) $(ATF)
+
+$(FSBL): $(KERNEL) $(HDF)	# builds PMUFW
+	@scripts/tools.sh $(VER) xsct scripts/build-fsbl.tcl $(HDF)
 
 $(DTS): $(FSBL) $(HDF)
-	@scripts/tools.sh $(VER) hsi scripts/build-dts.tcl $(HDF)
+	@scripts/tools.sh $(VER) xsct scripts/build-dts.tcl $(HDF)
+	@gcc -I dt -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o $(DTS).pre $(DTS)
+	@mv $(DTS).pre $(DTS)
 
 $(DTB): $(DTS) $(KERNEL)
-	@patch -p1 -N < patches/usb_host_mode.patch
+	@patch -p1 -N < patches/system-top.dts.patch
 	@trees/linux-xlnx/scripts/dtc/dtc -I dts -O dtb -o $(DTB) $(DTS)
 
-$(BOOT): $(BIT) $(UBOOT) $(FSBL) $(KERNEL)
-	@scripts/build-boot.sh $(VER) $(BIT) $(FSBL) $(UBOOT) $(KERNEL)
+$(BOOT): $(BIT) $(ATF) $(FSBL) $(PMUFW) $(UBOOT) $(DTB) $(KERNEL)
+	@scripts/build-boot.sh $(VER) $(BIT) $(ATF) $(FSBL) $(PMUFW) $(UBOOT) $(DTB) $(KERNEL)
 
 # Install on sdcard
 

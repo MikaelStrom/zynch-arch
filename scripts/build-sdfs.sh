@@ -10,5 +10,5 @@ if [ "$key" != 'y' ]; then
 fi
 echo Copying file sysytem, be patient...
 
-sudo bsdtar -xpf trees/ArchLinuxARM-zedboard-latest.tar.gz -C sdcard/fs
+sudo bsdtar -xpf trees/ArchLinuxARM-aarch64-latest.tar.gz -C sdcard/fs
 sync

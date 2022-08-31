@@ -13,13 +13,12 @@ fi
 echo Copying boot files...
 
 cp -f boot/boot.bin sdcard/boot
-cp -f dt/devicetree.dtb sdcard/boot
-cp -f $KERNEL sdcard/boot
+cp -f boot/devicetree.dtb sdcard/boot
+cp -f boot/image.ub sdcard/boot
+cp -f boot.scr sdcard/boot
 
 cat > sdcard/boot/uenv.txt <<- EOM
-uenvcmd=run sdboot
-sdboot=echo Copying Arch Linux from SD to RAM... && mmcinfo && fatload mmc 0 0x3000000 \${kernel_image} && fatload mmc 0 0x2A00000 \${devicetree_image} && bootm 0x3000000 - 0x2A00000
-bootargs=console=ttyPS0,115200 root=/dev/mmcblk0p2 rw earlyprintk rootfstype=ext4 rootwait
+setenv bootargs 'console=ttyPS0,115200 earlycon root=/dev/mmcblk1p2 rw rootwait cma=1500M'
 EOM
 
 sync

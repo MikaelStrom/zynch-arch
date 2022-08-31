@@ -3,7 +3,6 @@ set -e
 
 VER=$1
 VKERNEL=xilinx-v$VER
-NP=`nproc`
 
 echo Building kernel $VKERNEL
 
@@ -16,8 +15,8 @@ if [ `git describe --tags` != $VKERNEL ]; then
 	git checkout $VKERNEL
 fi
 
-make ARCH=arm mrproper
-make ARCH=arm xilinx_zynq_defconfig
-time make -j$NP ARCH=arm UIMAGE_LOADADDR=0x8000 uImage
-make ARCH=arm modules
-make ARCH=arm INSTALL_MOD_PATH=target modules_install
+make ARCH=arm64 mrproper
+make ARCH=arm64 xilinx_zynqmp_defconfig
+time make -j`nproc` ARCH=arm64
+make ARCH=arm64 modules
+make ARCH=arm64 INSTALL_MOD_PATH=target modules_install

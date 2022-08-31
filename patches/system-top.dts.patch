@@ -1,0 +1,15 @@
+--- a/dt/system-top.dts	2022-09-01 00:02:52.346298755 +0800
++++ b/dt/system-top.dts	2022-09-01 00:03:16.891941396 +0800
+@@ -1804,3 +1804,12 @@
+   reg = <0x0 0x0 0x0 0x7ff00000>, <0x00000008 0x00000000 0x0 0x80000000>;
+  };
+ };
++
++&sdhci1 {
++	status = "okay";
++	xlnx,has-cd = <0x1>;
++	xlnx,has-power = <0x0>;
++	xlnx,has-wp = <0x1>;
++	disable-wp;
++	no-1-8-v;
++};
